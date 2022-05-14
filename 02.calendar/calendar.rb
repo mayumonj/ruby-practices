@@ -1,7 +1,17 @@
+require 'optparse'
 require 'date'
 
-month = Date.today.month
-year = Date.today.year
+opt = OptionParser.new
+params = {}
+
+opt.on('-m VAL') {|v| params[:m] = v.to_i}
+opt.on('-y VAL') {|v| params[:y] = v.to_i}
+
+opt.parse!(ARGV)
+
+params[:y].nil? ? year = Date.today.year : year = params[:y]
+params[:m].nil? ? month = Date.today.month : month = params[:m]
+
 start_date = Date.new(year,month,1)
 end_date = start_date.next_month.prev_day
 
