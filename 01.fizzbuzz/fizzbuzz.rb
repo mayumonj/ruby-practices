@@ -1,5 +1,4 @@
-numbers = [*1..20]
-numbers.each do |num|
+(1..20).each do |num|
   if num % 15 == 0
     num = "FizzBuzz"
     puts num
