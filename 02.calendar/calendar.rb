@@ -1,24 +1,24 @@
 require 'optparse'
 require 'date'
 
-def get_default_year_and_month(params)
-  year = params[:y].nil? ? Date.today.year : params[:y].to_i
-  month = params[:m].nil? ? Date.today.month : params[:m].to_i
+def initialize_year_and_month(params)
+  year = params[:y] ? params[:y].to_i : Date.today.year
+  month = params[:m] ? params[:m].to_i : Date.today.month
   [year, month]
 end
 
-def validate_year(year)
-  return unless year < 1 || year > 9999
+def valid_year?(year)
+  return true if year in (1..9999)
 
   puts "year `#{year}' not in range 1..9999"
-  exit
+  false
 end
 
-def validate_month(month)
-  return unless month < 1 || month > 12
+def valid_month?(month)
+  return true if month in (1..12)
 
   puts "#{month} is neither a month number (1..12) nor a name"
-  exit
+  false
 end
 
 opt = OptionParser.new
@@ -29,21 +29,18 @@ opt.on('-y VAL') { |v| params[:y] = v }
 
 opt.parse!(ARGV)
 
-year, month = get_default_year_and_month(params)
-validate_year(year)
-validate_month(month)
-
-start_date = Date.new(year, month, 1)
-end_date = Date.new(year, month, -1)
+year, month = initialize_year_and_month(params)
+return unless valid_year?(year)
+return unless valid_month?(month)
 
 puts "      #{month}月 #{year}"
 puts '日 月 火 水 木 金 土'
 
-date = start_date
+start_date = Date.new(year, month, 1)
+end_date = Date.new(year, month, -1)
 
-print ('   ' * date.wday).to_s
-while date <= end_date
-  print date.day.to_s.rjust(2).to_s
+print '   ' * start_date.wday
+(start_date..end_date).each do |date|
+  print date.day.to_s.rjust(2)
   print date.saturday? ? "\n" : ' '
-  date = date.next_day
 end
