@@ -1,7 +1,7 @@
 require 'optparse'
 require 'date'
 
-def initialize_year_and_month(params)
+def get_year_month(params)
   year = params[:y] ? params[:y].to_i : Date.today.year
   month = params[:m] ? params[:m].to_i : Date.today.month
   [year, month]
@@ -29,7 +29,7 @@ opt.on('-y VAL') { |v| params[:y] = v }
 
 opt.parse!(ARGV)
 
-year, month = initialize_year_and_month(params)
+year, month = get_year_month(params)
 return unless valid_year?(year)
 return unless valid_month?(month)
 
