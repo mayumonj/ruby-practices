@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def main
   point = get_point(ARGV[0])
   puts point
