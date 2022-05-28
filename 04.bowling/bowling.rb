@@ -32,19 +32,11 @@ def calc_total_point(frames)
   point = (0..8).sum do |i|
     current_frame = frames[i]
     next_frame = frames[i + 1]
-    after_next_frame = frames[i + 2]
-    is_one_before_final_frame = (i == 8)
 
     if spare?(current_frame)
       10 + next_frame[0]
-    elsif strike?(current_frame) && !strike?(next_frame)
-      10 + next_frame[0] + next_frame[1]
-    elsif strike?(current_frame) && strike?(next_frame)
-      if is_one_before_final_frame
-        10 + next_frame[0] + next_frame[1]
-      else
-        10 + next_frame[0] + after_next_frame[0]
-      end
+    elsif strike?(current_frame)
+      calc_strike_bonus(frames, i)
     else
       current_frame.sum
     end
@@ -63,6 +55,21 @@ end
 
 def spare?(frame)
   !strike?(frame) && frame.sum == 10
+end
+
+def calc_strike_bonus(frames, current_index)
+  next_frame = frames[current_index + 1]
+  after_next_frame = frames[current_index + 2]
+
+  if strike?(next_frame)
+    if current_index == 8
+      10 + next_frame[0] + next_frame[1]
+    else
+      10 + next_frame[0] + after_next_frame[0]
+    end
+  else
+    10 + next_frame[0] + next_frame[1]
+  end
 end
 
 main if __FILE__ == $PROGRAM_NAME
