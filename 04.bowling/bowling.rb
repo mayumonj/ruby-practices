@@ -29,26 +29,28 @@ def get_frames(shots)
 end
 
 def calc_total_point(frames)
-  point = 0
-  (0..8).each do |i|
+  point = (0..8).sum do |i|
     current_frame = frames[i]
     next_frame = frames[i + 1]
     after_next_frame = frames[i + 2]
     is_one_before_final_frame = (i == 8)
 
-    point += calc_frame_point(current_frame, next_frame, after_next_frame, is_one_before_final_frame)
+    if spare?(current_frame)
+      10 + next_frame[0]
+    elsif strike?(current_frame) && !strike?(next_frame)
+      10 + next_frame[0] + next_frame[1]
+    elsif strike?(current_frame) && strike?(next_frame)
+      if is_one_before_final_frame
+        10 + next_frame[0] + next_frame[1]
+      else
+        10 + next_frame[0] + after_next_frame[0]
+      end
+    else
+      current_frame.sum
+    end
   end
 
   point + frames[9].sum
-end
-
-def calc_frame_point(current_frame, next_frame, after_next_frame, is_one_before_final_frame)
-  return current_frame.sum if open_frame?(current_frame)
-  return 10 + next_frame[0] if spare?(current_frame)
-  return 10 + next_frame[0] + next_frame[1] if strike?(current_frame) && !strike?(next_frame)
-  return 10 + next_frame[0] + next_frame[1] if strike?(current_frame) && strike?(next_frame) && is_one_before_final_frame
-
-  10 + next_frame[0] + after_next_frame[0]
 end
 
 def open_frame?(frame)
