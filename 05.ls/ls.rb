@@ -5,33 +5,36 @@ DEFAULT_PADDING = 25
 DEFAULT_BUFFER = 3
 
 def main
-  target_path = ARGV[0].nil? ? Dir.pwd : ARGV[0]
+  puts get_display_string(ARGV[0])
+end
 
-  if File.file?(target_path)
-    puts ARGV[0]
-    exit
-  end
+def get_display_string(arg_string)
+  target_path = arg_string.nil? ? Dir.pwd : arg_string
+
+  target_path if File.file?(target_path)
 
   begin
     Dir.chdir(target_path)
   rescue Errno::ENOENT => e
-    puts e
-    exit
+    e
   end
 
   content_names = Dir.glob('*')
-  display_filenames(content_names) unless content_names.empty?
+  get_display_columns(content_names) unless content_names.empty?
 end
 
-def display_filenames(content_names)
+def get_display_columns(content_names)
   padding = get_padding(content_names)
   number_of_rows = (content_names.length / NUMBER_OF_COLUMNS.to_f).ceil
+  rows = []
   (0..number_of_rows - 1).each do |n|
+    row = []
     (0..content_names.length - 1).each do |i|
-      print content_names[i].ljust(padding) if i % number_of_rows == n
+      row << content_names[i].ljust(padding) if i % number_of_rows == n
     end
-    print "\n"
+    rows << row.join
   end
+  rows
 end
 
 def get_padding(content_names)
