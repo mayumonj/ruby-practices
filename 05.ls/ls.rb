@@ -3,7 +3,7 @@ DEFAULT_PADDING = 25
 DEFAULT_BUFFER = 3
 
 def main
-  target_path = ARGV[0].nil? ? __dir__ : ARGV[0]
+  target_path = ARGV[0].nil? ? Dir.pwd : ARGV[0]
 
   if File.file?(target_path)
     puts ARGV[0]
@@ -18,7 +18,7 @@ def main
   end
 
   file_names = Dir.glob('*')
-  display_filenames(file_names)
+  display_filenames(file_names) unless file_names.empty?
 end
 
 def display_filenames(file_names)
