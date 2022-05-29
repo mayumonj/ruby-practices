@@ -22,6 +22,14 @@ class GateTest < Minitest::Test
   end
 
   def test_empty_directory
-    assert_equal nil, get_display_string('./child_dir/empty_dir')
+    assert_nil get_display_string('./child_dir/empty_dir')
+  end
+
+  def test_not_exist_directory
+    assert_equal 'No such file or directory @ dir_s_chdir - not-exist', get_display_string('not-exist').to_s
+  end
+
+  def test_file
+    assert_equal './file_a.txt', get_display_string('./file_a.txt')
   end
 end

@@ -11,12 +11,12 @@ end
 def get_display_string(arg_string)
   target_path = arg_string.nil? ? Dir.pwd : arg_string
 
-  target_path if File.file?(target_path)
+  return target_path if File.file?(target_path)
 
   begin
     Dir.chdir(target_path)
   rescue Errno::ENOENT => e
-    e
+    return e
   end
 
   content_names = Dir.glob('*')
