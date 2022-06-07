@@ -5,10 +5,14 @@ DEFAULT_PADDING = 25
 DEFAULT_BUFFER = 3
 
 def main
-  puts get_display_string(ARGV[0])
+  if ARGV[0] == '-a'
+    puts get_display_string('-a', ARGV[1])
+  else
+    puts get_display_string('', ARGV[0])
+  end
 end
 
-def get_display_string(arg_string)
+def get_display_string(option, arg_string)
   target_path = arg_string.nil? ? Dir.pwd : arg_string
 
   return target_path if File.file?(target_path)
@@ -19,7 +23,12 @@ def get_display_string(arg_string)
     return e
   end
 
-  content_names = Dir.glob('*')
+  case option
+  when ''
+    content_names = Dir.glob('*')
+  when '-a'
+    content_names = Dir.glob('*', File::FNM_DOTMATCH)
+  end
   get_display_columns(content_names) unless content_names.empty?
 end
 
