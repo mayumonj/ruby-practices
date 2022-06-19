@@ -31,35 +31,35 @@ def get_display_string(options, path)
     return e
   end
 
-  contents_list = get_contents_list(options)
-  get_display_columns(contents_list) unless contents_list.empty?
+  contents = get_contents(options)
+  get_display_columns(contents) unless contents.empty?
 end
 
-def get_contents_list(options)
-  contents_list = Dir.glob('*')
-  return contents_list if options.nil?
+def get_contents(options)
+  contents = Dir.glob('*')
+  return contents if options.nil?
 
-  contents_list = Dir.glob('*', File::FNM_DOTMATCH) if options.include? 'a'
-  contents_list.reverse! if options.include? 'r'
-  contents_list
+  contents = Dir.glob('*', File::FNM_DOTMATCH) if options.include? 'a'
+  contents.reverse! if options.include? 'r'
+  contents
 end
 
-def get_display_columns(contents_list)
-  padding = get_padding(contents_list)
-  number_of_rows = (contents_list.length / NUMBER_OF_COLUMNS.to_f).ceil
+def get_display_columns(contents)
+  padding = get_padding(contents)
+  number_of_rows = (contents.length / NUMBER_OF_COLUMNS.to_f).ceil
   rows = []
   (0..number_of_rows - 1).each do |n|
     row = []
-    (0..contents_list.length - 1).each do |i|
-      row << contents_list[i].ljust(padding) if i % number_of_rows == n
+    (0..contents.length - 1).each do |i|
+      row << contents[i].ljust(padding) if i % number_of_rows == n
     end
     rows << row.join
   end
   rows
 end
 
-def get_padding(contents_list)
-  [DEFAULT_PADDING, contents_list.map(&:length).max].max + DEFAULT_BUFFER
+def get_padding(contents)
+  [DEFAULT_PADDING, contents.map(&:length).max].max + DEFAULT_BUFFER
 end
 
 main if __FILE__ == $PROGRAM_NAME
