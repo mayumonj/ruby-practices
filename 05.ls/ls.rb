@@ -32,7 +32,7 @@ def get_display_string(options, path)
   end
 
   contents = get_contents(options)
-  get_display_columns(contents) unless contents.empty?
+  get_display_rows(contents) unless contents.empty?
 end
 
 def get_contents(options)
@@ -44,7 +44,7 @@ def get_contents(options)
   contents
 end
 
-def get_display_columns(contents)
+def get_display_rows(contents)
   padding = get_padding(contents)
   number_of_rows = (contents.length / NUMBER_OF_COLUMNS.to_f).ceil
   rows = []
