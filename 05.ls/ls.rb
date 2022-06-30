@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
+require 'optparse'
+
 NUMBER_OF_COLUMNS = 3
 DEFAULT_PADDING = 25
 DEFAULT_BUFFER = 3
-INVALID_OPTION_MESSAGE = 'invalid option'
 
 def main
   options, path, error_message = options_and_path(ARGV)
@@ -11,13 +12,19 @@ def main
 end
 
 def options_and_path(argv)
-  return [nil, nil, nil] if argv[0].nil?
-  # aオプション、rオプションのみ受け付ける
-  if argv[0][/-(\w)+/]
-    return argv[0][/-([ar])+/] ? [argv[0][/-([ar])+/], argv[1], nil] : [nil, nil, INVALID_OPTION_MESSAGE]
-  end
+  opt = OptionParser.new
 
-  [nil, argv[0], nil]
+  options = {}
+
+  # aオプション、rオプションのみ受け付ける
+  opt.on('-a') { |v| options[:a] = v }
+  opt.on('-r') { |v| options[:r] = v }
+
+  begin
+    [options, opt.parse!(argv).first, nil]
+  rescue OptionParser::InvalidOption => e
+    [nil, nil, e]
+  end
 end
 
 def get_display_string(options, path)
@@ -39,8 +46,8 @@ def get_contents(options)
   contents = Dir.glob('*')
   return contents if options.nil?
 
-  contents = Dir.glob('*', File::FNM_DOTMATCH) if options.include? 'a'
-  contents.reverse! if options.include? 'r'
+  contents = Dir.glob('*', File::FNM_DOTMATCH) if options.key?(:a)
+  contents.reverse! if options.key?(:r)
   contents
 end
 
