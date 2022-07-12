@@ -145,6 +145,37 @@ class LsMultiOptionsTest < Minitest::Test
       'child_dir                   .DS_Store                   '
     ], get_display_string({ r: true, a: true }, './alias_and_dir')
   end
+
+  def test_show_contents_option_al
+    assert_equal [
+      'total 32',
+      'drwxr-xr-x  6  UserName  staff    192  06 07 22:26  .',
+      '-rw-r--r--  1  UserName  staff  10244  06 07 22:33  .DS_Store',
+      '-rw-r--r--  1  UserName  staff    936  06 07 22:26  alias_a',
+      'drwxr-xr-x  3  UserName  staff     96  06 07 22:26  child_dir',
+      '-rw-r--r--  1  UserName  staff      0  06 07 22:26  file1.txt'
+    ], get_display_string({ l: true, a: true }, './alias_and_dir')
+  end
+
+  def test_show_contents_option_lr
+    assert_equal [
+      'total 8',
+      '-rw-r--r--  1  UserName  staff    0  06 07 22:26  file1.txt',
+      'drwxr-xr-x  3  UserName  staff   96  06 07 22:26  child_dir',
+      '-rw-r--r--  1  UserName  staff  936  06 07 22:26  alias_a'
+    ], get_display_string({ r: true, l: true }, './alias_and_dir')
+  end
+
+  def test_show_contents_option_arl
+    assert_equal [
+      'total 32',
+      '-rw-r--r--  1  UserName  staff      0  06 07 22:26  file1.txt',
+      'drwxr-xr-x  3  UserName  staff     96  06 07 22:26  child_dir',
+      '-rw-r--r--  1  UserName  staff    936  06 07 22:26  alias_a',
+      '-rw-r--r--  1  UserName  staff  10244  06 07 22:33  .DS_Store',
+      'drwxr-xr-x  6  UserName  staff    192  06 07 22:26  .'
+    ], get_display_string({ r: true, a: true, l: true }, './alias_and_dir')
+  end
 end
 
 class LsInvalidOptionsTest < Minitest::Test
@@ -172,5 +203,26 @@ class LsGetOptionsAndPathTest < Minitest::Test
 
   def test_multiple_options_and_path
     assert_equal [{ r: true, a: true }, '.', nil], options_and_path(['-ar', '.'])
+  end
+end
+
+class LsLOptionTest < Minitest::Test
+  CURRENT_DIRECTORY = Dir.pwd
+
+  def setup
+    Dir.chdir(CURRENT_DIRECTORY)
+  end
+
+  def test_target_empty_directory_option_l
+    assert_nil get_display_string({ l: true }, './empty_dir')
+  end
+
+  def test_show_contents_option_l
+    assert_equal [
+      'total 8',
+      '-rw-r--r--  1  UserName  staff  936  06 07 22:26  alias_a',
+      'drwxr-xr-x  3  UserName  staff   96  06 07 22:26  child_dir',
+      '-rw-r--r--  1  UserName  staff    0  06 07 22:26  file1.txt'
+    ], get_display_string({ l: true }, './alias_and_dir')
   end
 end
