@@ -21,53 +21,55 @@ def options_and_files(argv)
   begin
     [options, opt.parse!(argv), nil]
   rescue OptionParser::InvalidOption => e
-    [nil, nil, e]
+    [nil, nil, e.message]
   end
 end
 
 def get_display_string(options, files)
   if files.empty?
-    stdin_text = []
-    while (str = $stdin.gets)
-      stdin_text << str
-    end
-    counts = [word_count(stdin_text.join, nil)]
+    text = read_stdin
+    counts = [word_count(text, nil)]
   else
     counts = files.map do |file|
-      word_count(read_file(file), file)
+      text = File.open(file, 'r').read
+      word_count(text, file)
+    rescue StandardError => e
+      {
+        lines: 0,
+        words: 0,
+        characters: 0,
+        error: e.message
+      }
     end
     counts << total(counts) if files.length > 1
   end
   format(counts, options)
 end
 
-def read_file(file)
-  File.open(file, 'r').read
-rescue StandardError => e
-  e
+def read_stdin
+  text = []
+  while (str = $stdin.gets)
+    text << str
+  end
+  text.join
 end
 
 def word_count(text, file)
-  count = {}
-  if text.instance_of?(String)
-    count[:lines] = text.count("\n")
-    count[:words] = text.split.length
-    count[:characters] = text.length
-    count[:file_path] = file unless file.nil?
-  else
-    error = text
-    count[:error] = error.message
-  end
-  count
+  {
+    lines: text.count("\n"),
+    words: text.split.length,
+    characters: text.length,
+    file_path: file
+  }
 end
 
 def total(counts)
-  total_count = {}
-  total_count[:lines] = counts.inject(0) { |total, count| total + (count[:lines] || 0) }
-  total_count[:words] = counts.inject(0) { |total, count| total + (count[:words] || 0) }
-  total_count[:characters] = counts.inject(0) { |total, count| total + (count[:characters] || 0) }
-  total_count[:file_path] = 'total'
-  total_count
+  {
+    lines: counts.sum { |count| count[:lines] },
+    words: counts.sum { |count| count[:words] },
+    characters: counts.sum { |count| count[:characters] },
+    file_path: 'total'
+  }
 end
 
 def format(counts, options)
