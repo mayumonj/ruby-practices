@@ -4,39 +4,41 @@ require 'minitest/autorun'
 require_relative 'wc'
 
 class WcArgumentTest < Minitest::Test
-  CURRENT_DIRECTORY = Dir.pwd
-
-  def setup
-    Dir.chdir(CURRENT_DIRECTORY)
-  end
-
   def test_file
     assert_equal ['       1        2       14 file1.txt'],
                  get_display_string({}, ['file1.txt'])
   end
 
   def test_two_files
-    assert_equal ['       1        2       14 file1.txt',
-                  '       2        4       25 file2.txt',
-                  '       3        6       39 total'],
-                 get_display_string({}, ['file1.txt', 'file2.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1        2       14 file1.txt
+      \       2        4       25 file2.txt
+      \       3        6       39 total
+    TEXT
+    actual = get_display_string({}, ['file1.txt', 'file2.txt'])
+    assert_equal expected, actual
   end
 
   def test_three_files
-    assert_equal ['       1        2       14 file1.txt',
-                  '       2        4       25 file2.txt',
-                  '       3        6       39 file3.txt',
-                  '       6       12       78 total'],
-                 get_display_string({}, ['file1.txt', 'file2.txt', 'file3.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1        2       14 file1.txt
+      \       2        4       25 file2.txt
+      \       3        6       39 file3.txt
+      \       6       12       78 total
+    TEXT
+    actual = get_display_string({}, ['file1.txt', 'file2.txt', 'file3.txt'])
+    assert_equal expected, actual
   end
 
   def test_file_path
-    Dir.chdir('..')
-    assert_equal ['       1        2       14 test_dir/file1.txt',
-                  '       2        4       25 test_dir/file2.txt',
-                  '       3        6       39 test_dir/file3.txt',
-                  '       6       12       78 total'],
-                 get_display_string({}, ['test_dir/file1.txt', 'test_dir/file2.txt', 'test_dir/file3.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1        2       18 child_dir/child_file1.txt
+      \       2        4       37 child_dir/child_file2.txt
+      \       3        6       57 child_dir/child_file3.txt
+      \       6       12      112 total
+    TEXT
+    actual = get_display_string({}, ['child_dir/child_file1.txt', 'child_dir/child_file2.txt', 'child_dir/child_file3.txt'])
+    assert_equal expected, actual
   end
 
   def test_not_exist_file
@@ -45,26 +47,35 @@ class WcArgumentTest < Minitest::Test
   end
 
   def test_exist_file_and_not_exist_file
-    assert_equal ['       1        2       14 file1.txt',
-                  'No such file or directory @ rb_sysopen - not-exist.txt',
-                  '       1        2       14 total'],
-                 get_display_string({}, ['file1.txt', 'not-exist.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1        2       14 file1.txt
+      No such file or directory @ rb_sysopen - not-exist.txt
+      \       1        2       14 total
+    TEXT
+    actual = get_display_string({}, ['file1.txt', 'not-exist.txt'])
+    assert_equal expected, actual
   end
 
   def test_two_exist_files_and_not_exist_file
-    assert_equal ['       1        2       14 file1.txt',
-                  '       2        4       25 file2.txt',
-                  'No such file or directory @ rb_sysopen - not-exist.txt',
-                  '       3        6       39 total'],
-                 get_display_string({}, ['file1.txt', 'file2.txt', 'not-exist.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1        2       14 file1.txt
+      \       2        4       25 file2.txt
+      No such file or directory @ rb_sysopen - not-exist.txt
+      \       3        6       39 total
+    TEXT
+    actual = get_display_string({}, ['file1.txt', 'file2.txt', 'not-exist.txt'])
+    assert_equal expected, actual
   end
 
   def test_directory
-    assert_equal ['       1        2       14 file1.txt',
-                  '       2        4       25 file2.txt',
-                  'Is a directory @ io_fread - child_dir',
-                  '       3        6       39 total'],
-                 get_display_string({}, ['file1.txt', 'file2.txt', 'child_dir'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1        2       14 file1.txt
+      \       2        4       25 file2.txt
+      Is a directory @ io_fread - child_dir
+      \       3        6       39 total
+    TEXT
+    actual = get_display_string({}, ['file1.txt', 'file2.txt', 'child_dir'])
+    assert_equal expected, actual
   end
 
   def test_no_argument
@@ -89,82 +100,112 @@ end
 
 class WcOptionTest < Minitest::Test
   def test_option_l
-    assert_equal ['       1 file1.txt',
-                  '       2 file2.txt',
-                  '       3 file3.txt',
-                  '       6 total'],
-                 get_display_string({ l: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1 file1.txt
+      \       2 file2.txt
+      \       3 file3.txt
+      \       6 total
+    TEXT
+    actual = get_display_string({ l: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    assert_equal expected, actual
   end
 
   def test_option_w
-    assert_equal ['       2 file1.txt',
-                  '       4 file2.txt',
-                  '       6 file3.txt',
-                  '      12 total'],
-                 get_display_string({ w: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       2 file1.txt
+      \       4 file2.txt
+      \       6 file3.txt
+      \      12 total
+    TEXT
+    actual = get_display_string({ w: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    assert_equal expected, actual
   end
 
   def test_option_c
-    assert_equal ['      14 file1.txt',
-                  '      25 file2.txt',
-                  '      39 file3.txt',
-                  '      78 total'],
-                 get_display_string({ c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \      14 file1.txt
+      \      25 file2.txt
+      \      39 file3.txt
+      \      78 total
+    TEXT
+    actual = get_display_string({ c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    assert_equal expected, actual
   end
 
   def test_option_lw
-    assert_equal ['       1        2 file1.txt',
-                  '       2        4 file2.txt',
-                  '       3        6 file3.txt',
-                  '       6       12 total'],
-                 get_display_string({ l: true, w: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1        2 file1.txt
+      \       2        4 file2.txt
+      \       3        6 file3.txt
+      \       6       12 total
+    TEXT
+    actual = get_display_string({ l: true, w: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    assert_equal expected, actual
   end
 
   def test_option_lc
-    assert_equal ['       1       14 file1.txt',
-                  '       2       25 file2.txt',
-                  '       3       39 file3.txt',
-                  '       6       78 total'],
-                 get_display_string({ l: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1       14 file1.txt
+      \       2       25 file2.txt
+      \       3       39 file3.txt
+      \       6       78 total
+    TEXT
+    actual = get_display_string({ l: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    assert_equal expected, actual
   end
 
   def test_option_wc
-    assert_equal ['       2       14 file1.txt',
-                  '       4       25 file2.txt',
-                  '       6       39 file3.txt',
-                  '      12       78 total'],
-                 get_display_string({ w: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       2       14 file1.txt
+      \       4       25 file2.txt
+      \       6       39 file3.txt
+      \      12       78 total
+    TEXT
+    actual = get_display_string({ w: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    assert_equal expected, actual
   end
 
   def test_option_lwc
-    assert_equal ['       1        2       14 file1.txt',
-                  '       2        4       25 file2.txt',
-                  '       3        6       39 file3.txt',
-                  '       6       12       78 total'],
-                 get_display_string({ l: true, w: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1        2       14 file1.txt
+      \       2        4       25 file2.txt
+      \       3        6       39 file3.txt
+      \       6       12       78 total
+    TEXT
+    actual = get_display_string({ l: true, w: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    assert_equal expected, actual
   end
 
   def test_option_cwl
-    assert_equal ['       1        2       14 file1.txt',
-                  '       2        4       25 file2.txt',
-                  '       3        6       39 file3.txt',
-                  '       6       12       78 total'],
-                 get_display_string({ c: true, w: true, l: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1        2       14 file1.txt
+      \       2        4       25 file2.txt
+      \       3        6       39 file3.txt
+      \       6       12       78 total
+    TEXT
+    actual = get_display_string({ c: true, w: true, l: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    assert_equal expected, actual
   end
 
   def test_single_option_with_error
-    assert_equal ['      14 file1.txt',
-                  '      25 file2.txt',
-                  'No such file or directory @ rb_sysopen - not-exist.txt',
-                  '      39 total'],
-                 get_display_string({ c: true }, ['file1.txt', 'file2.txt', 'not-exist.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \      14 file1.txt
+      \      25 file2.txt
+      No such file or directory @ rb_sysopen - not-exist.txt
+      \      39 total
+    TEXT
+    actual = get_display_string({ c: true }, ['file1.txt', 'file2.txt', 'not-exist.txt'])
+    assert_equal expected, actual
   end
 
   def test_two_options_with_error
-    assert_equal ['       1        2 file1.txt',
-                  '       2        4 file2.txt',
-                  'No such file or directory @ rb_sysopen - not-exist.txt',
-                  '       3        6 total'],
-                 get_display_string({ l: true, w: true }, ['file1.txt', 'file2.txt', 'not-exist.txt'])
+    expected = <<~TEXT.lines(chomp: true)
+      \       1        2 file1.txt
+      \       2        4 file2.txt
+      No such file or directory @ rb_sysopen - not-exist.txt
+      \       3        6 total
+    TEXT
+    actual = get_display_string({ l: true, w: true }, ['file1.txt', 'file2.txt', 'not-exist.txt'])
+    assert_equal expected, actual
   end
 end
