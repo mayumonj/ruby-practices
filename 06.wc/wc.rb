@@ -5,11 +5,11 @@ require 'optparse'
 DEFAULT_SPACE = 8
 
 def main
-  options, files, error_message = options_and_files(ARGV)
-  puts error_message || get_display_string(options, files)
+  options, files, error_message = parse_arguments(ARGV)
+  puts error_message || build_display_text(options, files)
 end
 
-def options_and_files(argv)
+def parse_arguments(argv)
   opt = OptionParser.new
 
   options = {}
@@ -25,14 +25,14 @@ def options_and_files(argv)
   end
 end
 
-def get_display_string(options, files)
+def build_display_text(options, files)
   if files.empty?
     text = read_stdin
-    counts = [word_count(text, nil)]
+    counts = [count_words(text, nil)]
   else
     counts = files.map do |file|
       text = File.open(file, 'r').read
-      word_count(text, file)
+      count_words(text, file)
     rescue StandardError => e
       {
         lines: 0,
@@ -41,9 +41,9 @@ def get_display_string(options, files)
         error: e.message
       }
     end
-    counts << total(counts) if files.length > 1
+    counts << calculate_total(counts) if files.length > 1
   end
-  format(counts, options)
+  format_counts(counts, options)
 end
 
 def read_stdin
@@ -54,7 +54,7 @@ def read_stdin
   text.join
 end
 
-def word_count(text, file)
+def count_words(text, file)
   {
     lines: text.count("\n"),
     words: text.split.length,
@@ -63,7 +63,7 @@ def word_count(text, file)
   }
 end
 
-def total(counts)
+def calculate_total(counts)
   {
     lines: counts.sum { |count| count[:lines] },
     words: counts.sum { |count| count[:words] },
@@ -72,7 +72,7 @@ def total(counts)
   }
 end
 
-def format(counts, options)
+def format_counts(counts, options)
   options = { l: true, w: true, c: true } if options.empty?
   counts.map do |count|
     if count[:error].nil?

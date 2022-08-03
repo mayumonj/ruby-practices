@@ -6,7 +6,7 @@ require_relative 'wc'
 class WcArgumentTest < Minitest::Test
   def test_file
     assert_equal ['       1        2       14 file1.txt'],
-                 get_display_string({}, ['file1.txt'])
+                 build_display_text({}, ['file1.txt'])
   end
 
   def test_two_files
@@ -15,7 +15,7 @@ class WcArgumentTest < Minitest::Test
       \       2        4       25 file2.txt
       \       3        6       39 total
     TEXT
-    actual = get_display_string({}, ['file1.txt', 'file2.txt'])
+    actual = build_display_text({}, ['file1.txt', 'file2.txt'])
     assert_equal expected, actual
   end
 
@@ -26,7 +26,7 @@ class WcArgumentTest < Minitest::Test
       \       3        6       39 file3.txt
       \       6       12       78 total
     TEXT
-    actual = get_display_string({}, ['file1.txt', 'file2.txt', 'file3.txt'])
+    actual = build_display_text({}, ['file1.txt', 'file2.txt', 'file3.txt'])
     assert_equal expected, actual
   end
 
@@ -37,13 +37,13 @@ class WcArgumentTest < Minitest::Test
       \       3        6       57 child_dir/child_file3.txt
       \       6       12      112 total
     TEXT
-    actual = get_display_string({}, ['child_dir/child_file1.txt', 'child_dir/child_file2.txt', 'child_dir/child_file3.txt'])
+    actual = build_display_text({}, ['child_dir/child_file1.txt', 'child_dir/child_file2.txt', 'child_dir/child_file3.txt'])
     assert_equal expected, actual
   end
 
   def test_not_exist_file
     assert_equal ['No such file or directory @ rb_sysopen - file99.txt'],
-                 get_display_string({}, ['file99.txt'])
+                 build_display_text({}, ['file99.txt'])
   end
 
   def test_exist_file_and_not_exist_file
@@ -52,7 +52,7 @@ class WcArgumentTest < Minitest::Test
       No such file or directory @ rb_sysopen - not-exist.txt
       \       1        2       14 total
     TEXT
-    actual = get_display_string({}, ['file1.txt', 'not-exist.txt'])
+    actual = build_display_text({}, ['file1.txt', 'not-exist.txt'])
     assert_equal expected, actual
   end
 
@@ -63,7 +63,7 @@ class WcArgumentTest < Minitest::Test
       No such file or directory @ rb_sysopen - not-exist.txt
       \       3        6       39 total
     TEXT
-    actual = get_display_string({}, ['file1.txt', 'file2.txt', 'not-exist.txt'])
+    actual = build_display_text({}, ['file1.txt', 'file2.txt', 'not-exist.txt'])
     assert_equal expected, actual
   end
 
@@ -74,7 +74,7 @@ class WcArgumentTest < Minitest::Test
       Is a directory @ io_fread - child_dir
       \       3        6       39 total
     TEXT
-    actual = get_display_string({}, ['file1.txt', 'file2.txt', 'child_dir'])
+    actual = build_display_text({}, ['file1.txt', 'file2.txt', 'child_dir'])
     assert_equal expected, actual
   end
 
@@ -106,7 +106,7 @@ class WcOptionTest < Minitest::Test
       \       3 file3.txt
       \       6 total
     TEXT
-    actual = get_display_string({ l: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    actual = build_display_text({ l: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
     assert_equal expected, actual
   end
 
@@ -117,7 +117,7 @@ class WcOptionTest < Minitest::Test
       \       6 file3.txt
       \      12 total
     TEXT
-    actual = get_display_string({ w: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    actual = build_display_text({ w: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
     assert_equal expected, actual
   end
 
@@ -128,7 +128,7 @@ class WcOptionTest < Minitest::Test
       \      39 file3.txt
       \      78 total
     TEXT
-    actual = get_display_string({ c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    actual = build_display_text({ c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
     assert_equal expected, actual
   end
 
@@ -139,7 +139,7 @@ class WcOptionTest < Minitest::Test
       \       3        6 file3.txt
       \       6       12 total
     TEXT
-    actual = get_display_string({ l: true, w: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    actual = build_display_text({ l: true, w: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
     assert_equal expected, actual
   end
 
@@ -150,7 +150,7 @@ class WcOptionTest < Minitest::Test
       \       3       39 file3.txt
       \       6       78 total
     TEXT
-    actual = get_display_string({ l: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    actual = build_display_text({ l: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
     assert_equal expected, actual
   end
 
@@ -161,7 +161,7 @@ class WcOptionTest < Minitest::Test
       \       6       39 file3.txt
       \      12       78 total
     TEXT
-    actual = get_display_string({ w: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    actual = build_display_text({ w: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
     assert_equal expected, actual
   end
 
@@ -172,7 +172,7 @@ class WcOptionTest < Minitest::Test
       \       3        6       39 file3.txt
       \       6       12       78 total
     TEXT
-    actual = get_display_string({ l: true, w: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    actual = build_display_text({ l: true, w: true, c: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
     assert_equal expected, actual
   end
 
@@ -183,7 +183,7 @@ class WcOptionTest < Minitest::Test
       \       3        6       39 file3.txt
       \       6       12       78 total
     TEXT
-    actual = get_display_string({ c: true, w: true, l: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
+    actual = build_display_text({ c: true, w: true, l: true }, ['file1.txt', 'file2.txt', 'file3.txt'])
     assert_equal expected, actual
   end
 
@@ -194,7 +194,7 @@ class WcOptionTest < Minitest::Test
       No such file or directory @ rb_sysopen - not-exist.txt
       \      39 total
     TEXT
-    actual = get_display_string({ c: true }, ['file1.txt', 'file2.txt', 'not-exist.txt'])
+    actual = build_display_text({ c: true }, ['file1.txt', 'file2.txt', 'not-exist.txt'])
     assert_equal expected, actual
   end
 
@@ -205,7 +205,7 @@ class WcOptionTest < Minitest::Test
       No such file or directory @ rb_sysopen - not-exist.txt
       \       3        6 total
     TEXT
-    actual = get_display_string({ l: true, w: true }, ['file1.txt', 'file2.txt', 'not-exist.txt'])
+    actual = build_display_text({ l: true, w: true }, ['file1.txt', 'file2.txt', 'not-exist.txt'])
     assert_equal expected, actual
   end
 end
