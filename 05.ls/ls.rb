@@ -67,10 +67,10 @@ end
 def rows(options)
   if !options.nil? && options.key?(:l)
     contents = get_content_details(options)
-    return get_details_display_rows(contents) unless contents.empty?
+    get_details_display_rows(contents) unless contents.empty?
   else
     contents = get_content_names(options)
-    return get_display_rows(contents) unless contents.empty?
+    get_display_rows(contents) unless contents.empty?
   end
 end
 
