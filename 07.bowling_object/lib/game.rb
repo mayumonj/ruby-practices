@@ -8,6 +8,23 @@ class Game
     @shots = marks_str.split(',').map { |mark| Shot.new(mark) }
   end
 
+  def point_result
+    sum = 0
+    (0..9).each do |n|
+      frame, next_frame, after_next_frame = frames.slice(n, 3)
+      next_frame ||= Frame.new(nil)
+      after_next_frame ||= Frame.new(nil)
+      left_shots = next_frame.shots + after_next_frame.shots
+
+      sum += frame.score
+      sum += bonus_point(left_shots.slice(0, 2)) if frame.strike?
+      sum += bonus_point(left_shots.slice(0, 1)) if frame.spare?
+    end
+    sum
+  end
+
+  private
+
   def frames
     frames = []
     frame = Frame.new(nil)
@@ -23,21 +40,6 @@ class Game
       end
     end
     frames
-  end
-
-  def point_result
-    sum = 0
-    (0..9).each do |n|
-      frame, next_frame, after_next_frame = frames.slice(n, 3)
-      next_frame ||= Frame.new(nil)
-      after_next_frame ||= Frame.new(nil)
-      left_shots = next_frame.shots + after_next_frame.shots
-
-      sum += frame.score
-      sum += bonus_point(left_shots.slice(0, 2)) if frame.strike?
-      sum += bonus_point(left_shots.slice(0, 1)) if frame.spare?
-    end
-    sum
   end
 
   def bonus_point(shots)
