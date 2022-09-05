@@ -43,10 +43,6 @@ class Game
   end
 
   def bonus_point(shots)
-    sum = 0
-    shots.each do |shot|
-      sum += shot.score
-    end
-    sum
+    shots.inject(0) { |sum, shot| sum + shot.score }
   end
 end

@@ -10,10 +10,6 @@ class Shot
   private
 
   def to_score(mark)
-    if mark == 'X'
-      10
-    else
-      mark.to_i
-    end
+    mark == 'X' ? 10 : mark.to_i
   end
 end
