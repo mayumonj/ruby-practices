@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require_relative 'game'
-require_relative 'frame'
-require_relative 'shot'
+require_relative '../lib/game'
+require_relative '../lib/frame'
+require_relative '../lib/shot'
 
 def main
   game = Game.new(ARGV[0])
