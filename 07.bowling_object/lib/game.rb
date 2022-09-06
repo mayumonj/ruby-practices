@@ -6,12 +6,13 @@ require_relative 'shot'
 class Game
   def initialize(marks_str)
     @shots = marks_str.split(',').map { |mark| Shot.new(mark) }
+    @frames = frames
   end
 
   def point_result
     sum = 0
     (0..9).each do |n|
-      frame, next_frame, after_next_frame = frames.slice(n, 3)
+      frame, next_frame, after_next_frame = @frames.slice(n, 3)
       next_frame ||= Frame.new
       after_next_frame ||= Frame.new
       left_shots = next_frame.shots + after_next_frame.shots
