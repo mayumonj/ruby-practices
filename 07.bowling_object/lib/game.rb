@@ -12,8 +12,8 @@ class Game
     sum = 0
     (0..9).each do |n|
       frame, next_frame, after_next_frame = frames.slice(n, 3)
-      next_frame ||= Frame.new(nil)
-      after_next_frame ||= Frame.new(nil)
+      next_frame ||= Frame.new
+      after_next_frame ||= Frame.new
       left_shots = next_frame.shots + after_next_frame.shots
 
       sum += frame.score
@@ -27,13 +27,13 @@ class Game
 
   def frames
     frames = []
-    frame = Frame.new(nil)
+    frame = Frame.new
     @shots.each do |shot|
       frame.shots << shot
       if frames.size < 10
         if frame.shots.size >= 2 || shot.score == 10
           frames << frame
-          frame = Frame.new(nil)
+          frame = Frame.new
         end
       else
         frames.last.shots << shot

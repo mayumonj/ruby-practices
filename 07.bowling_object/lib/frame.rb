@@ -5,8 +5,8 @@ require_relative 'shot'
 class Frame
   attr_reader :shots
 
-  def initialize(shots)
-    @shots = shots || []
+  def initialize
+    @shots = []
   end
 
   def strike?
