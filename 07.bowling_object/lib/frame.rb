@@ -10,14 +10,14 @@ class Frame
   end
 
   def strike?
-    @shots.first.score == 10
+    @shots.first.points == 10
   end
 
   def spare?
-    score == 10 && shots.length == 2
+    calculate_points == 10 && shots.length == 2
   end
 
-  def score
-    shots.inject(0) { |sum, shot| sum + shot.score }
+  def calculate_points
+    shots.inject(0) { |sum, shot| sum + shot.points }
   end
 end

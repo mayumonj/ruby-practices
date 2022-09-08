@@ -6,7 +6,7 @@ require_relative '../lib/shot'
 
 def main
   game = Game.new(ARGV[0])
-  puts game.point_result
+  puts game.calculate_final_score
 end
 
 main if __FILE__ == $PROGRAM_NAME
