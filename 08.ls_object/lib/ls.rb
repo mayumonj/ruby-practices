@@ -31,16 +31,34 @@ class Ls
     return if contents.empty?
 
     if options.key?(:l)
-      puts detail_list(contents)
+      get_detail_list(contents)
     else
-      puts simple_list(contents)
+      get_simple_list(contents)
     end
   end
 
   private
 
-  def simple_list(contents)
-    padding = max_lengths(contents)[:name] + DEFAULT_BUFFER
+  def get_detail_list(contents)
+    max_lengths = calculate_max_lengths(contents)
+    rows = []
+    rows[0] = "total #{contents.inject(0) { |total, content| total + content.blocks }}"
+    contents.each do |content|
+      row = []
+      row << "#{get_file_type_string(content.ftype)}#{get_file_permission_strings(content.permission)}"
+      row << content.nlink.to_s.rjust(max_lengths[:nlink])
+      row << content.owner.rjust(max_lengths[:owner])
+      row << content.group.rjust(max_lengths[:group])
+      row << content.size.to_s.rjust(max_lengths[:size])
+      row << format_mtime(content.mtime)
+      row << content.name
+      rows << row.join(' ' * DEFAULT_BUFFER)
+    end
+    rows
+  end
+
+  def get_simple_list(contents)
+    padding = calculate_max_lengths(contents)[:name] + DEFAULT_BUFFER
     number_of_rows = (contents.length / NUMBER_OF_COLUMNS.to_f).ceil
     rows = []
     (0..number_of_rows - 1).each do |n|
@@ -53,25 +71,7 @@ class Ls
     rows
   end
 
-  def detail_list(contents)
-    max_lengths = max_lengths(contents)
-    rows = []
-    rows[0] = "total #{contents.inject(0) { |total, content| total + content.blocks }}"
-    contents.each do |content|
-      row = []
-      row << "#{file_type_string(content.ftype)}#{file_permission_strings(content.permission)}"
-      row << content.nlink.to_s.rjust(max_lengths[:nlink])
-      row << content.owner.rjust(max_lengths[:owner])
-      row << content.group.rjust(max_lengths[:group])
-      row << content.size.to_s.rjust(max_lengths[:size])
-      row << format_mtime(content.mtime)
-      row << content.name
-      rows << row.join(' ' * DEFAULT_BUFFER)
-    end
-    rows
-  end
-
-  def max_lengths(contents)
+  def calculate_max_lengths(contents)
     max_lengths = {}
     max_lengths[:name] = contents.inject(0) { |max, content| [max, content.name.length].max }
     max_lengths[:nlink] = contents.inject(0) { |max, content| [max, content.nlink.to_s.length].max }
@@ -89,11 +89,11 @@ class Ls
     end
   end
 
-  def file_type_string(ftype)
+  def get_file_type_string(ftype)
     FILE_TYPE_STRING[ftype]
   end
 
-  def file_permission_strings(permission)
+  def get_file_permission_strings(permission)
     "#{PERMISSON_STRING[permission[-3]]}#{PERMISSON_STRING[permission[-2]]}#{PERMISSON_STRING[permission[-1]]}"
   end
 end

@@ -14,8 +14,12 @@ def main
 
   ls = Ls.new
   content_factory = ContentFactory.new
-  contents = content_factory.create_content(argement_parser.path)
-  ls.display(argement_parser.options, contents)
+  contents, message = content_factory.create_content(argement_parser.path)
+  if message
+    puts message
+    return
+  end
+  puts ls.display(argement_parser.options, contents)
 end
 
 main if __FILE__ == $PROGRAM_NAME
