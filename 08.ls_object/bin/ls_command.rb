@@ -6,9 +6,9 @@ require_relative '../lib/content_factory'
 require_relative '../lib/ls'
 
 def main
-  argement_parser = ArgumentParser.new(ARGV)
-  if argement_parser.error_message
-    puts argement_parser.error_message
+  argument_parser = ArgumentParser.new(ARGV)
+  if argument_parser.error_message
+    puts argument_parser.error_message
     return
   end
 
