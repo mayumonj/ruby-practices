@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# require_relative 'content'
+require_relative 'content'
 
 class ContentFactory
   def create_content(path)
