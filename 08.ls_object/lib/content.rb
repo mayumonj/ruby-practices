@@ -19,6 +19,6 @@ class Content
   end
 
   def dot_file?
-    @name[0, 1] == '.'
+    @name[0] == '.'
   end
 end
