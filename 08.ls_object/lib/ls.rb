@@ -30,11 +30,13 @@ class Ls
     contents.reverse! if options.key?(:r)
     return if contents.empty?
 
-    if options.key?(:l)
-      generate_detail_list(contents)
-    else
-      generate_simple_list(contents)
-    end
+    list = if options.key?(:l)
+             generate_detail_list(contents)
+           else
+             generate_simple_list(contents)
+           end
+    puts list
+    list
   end
 
   private
