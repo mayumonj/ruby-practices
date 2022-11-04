@@ -31,21 +31,21 @@ class Ls
     return if contents.empty?
 
     if options.key?(:l)
-      get_detail_list(contents)
+      generate_detail_list(contents)
     else
-      get_simple_list(contents)
+      generate_simple_list(contents)
     end
   end
 
   private
 
-  def get_detail_list(contents)
+  def generate_detail_list(contents)
     max_lengths = calculate_max_lengths(contents)
     rows = []
     rows[0] = "total #{contents.inject(0) { |total, content| total + content.blocks }}"
     contents.each do |content|
       row = []
-      row << "#{get_file_type_string(content.ftype)}#{get_file_permission_strings(content.permission)}"
+      row << "#{file_type_string(content.ftype)}#{file_permission_strings(content.permission)}"
       row << content.nlink.to_s.rjust(max_lengths[:nlink])
       row << content.owner.rjust(max_lengths[:owner])
       row << content.group.rjust(max_lengths[:group])
@@ -57,7 +57,7 @@ class Ls
     rows
   end
 
-  def get_simple_list(contents)
+  def generate_simple_list(contents)
     padding = calculate_max_lengths(contents)[:name] + DEFAULT_BUFFER
     number_of_rows = (contents.length / NUMBER_OF_COLUMNS.to_f).ceil
     rows = []
@@ -89,11 +89,11 @@ class Ls
     end
   end
 
-  def get_file_type_string(ftype)
+  def file_type_string(ftype)
     FILE_TYPE_STRING[ftype]
   end
 
-  def get_file_permission_strings(permission)
+  def file_permission_strings(permission)
     "#{PERMISSON_STRING[permission[-3]]}#{PERMISSON_STRING[permission[-2]]}#{PERMISSON_STRING[permission[-1]]}"
   end
 end
