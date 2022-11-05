@@ -3,12 +3,13 @@
 require 'etc'
 
 class Content
-  attr_reader :name, :ftype, :permission, :nlink, :owner, :group, :size, :mtime, :blocks
+  attr_reader :display_name, :ftype, :permission, :nlink, :owner, :group, :size, :mtime, :blocks
 
-  def initialize(filepath)
-    fs = File.lstat(filepath)
-    name = filepath.split('/').last
-    @name = name
+  def initialize(path, display_name)
+    fs = File.lstat(path)
+    @path = path
+    @name = File.basename(@path)
+    @display_name = display_name
     @ftype = fs.ftype
     @permission = fs.mode.to_s(8)
     @nlink = fs.nlink

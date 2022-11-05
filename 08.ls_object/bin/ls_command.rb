@@ -19,8 +19,7 @@ def main
     return
   end
 
-  ls = Ls.new
-  ls.display(argument_parser.options, contents)
+  Ls.display(argument_parser.options, contents)
 end
 
 main if __FILE__ == $PROGRAM_NAME
