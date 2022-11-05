@@ -5,8 +5,9 @@ require 'etc'
 class Content
   attr_reader :name, :ftype, :permission, :nlink, :owner, :group, :size, :mtime, :blocks
 
-  def initialize(dir, name)
-    fs = File.lstat("#{dir}/#{name}")
+  def initialize(filepath)
+    fs = File.lstat(filepath)
+    name = filepath.split('/').last
     @name = name
     @ftype = fs.ftype
     @permission = fs.mode.to_s(8)

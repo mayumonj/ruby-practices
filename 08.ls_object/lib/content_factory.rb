@@ -3,20 +3,19 @@
 require_relative 'content'
 
 class ContentFactory
-  def create_content(path)
+  def self.create_contents(path = nil)
     target_path = path.nil? ? Dir.pwd : path
-    return [nil, target_path] if File.file?(target_path)
-
-    begin
-      Dir.chdir(target_path)
-    rescue Errno::ENOENT
-      return [nil, "ls: #{target_path}: No such file or directory"]
+    contents = []
+    if File.file?(target_path)
+      contents << Content.new(target_path)
+    elsif File.directory?(target_path)
+      Dir.foreach(target_path) do |name|
+        contents << Content.new("#{target_path}/#{name}")
+      end
+    else
+      raise ArgumentError, "ls: #{target_path}: No such file or directory"
     end
 
-    content_names = Dir.glob('*', File::FNM_DOTMATCH)
-    contents = content_names.map do |content_name|
-      Content.new(Dir.pwd, content_name)
-    end
-    [contents, nil]
+    contents
   end
 end

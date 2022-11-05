@@ -12,12 +12,13 @@ def main
     return
   end
 
-  content_factory = ContentFactory.new
-  contents, message = content_factory.create_content(argument_parser.path)
-  if message
-    puts message
+  begin
+    contents = ContentFactory.create_contents(argument_parser.path)
+  rescue ArgumentError => e
+    puts e.message
     return
   end
+
   ls = Ls.new
   ls.display(argument_parser.options, contents)
 end
