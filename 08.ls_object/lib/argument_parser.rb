@@ -3,7 +3,7 @@
 require 'optparse'
 
 class ArgumentParser
-  attr_reader :options, :path, :error_message
+  attr_reader :options, :paths, :error_message
 
   def initialize(argv)
     opt = OptionParser.new
@@ -15,7 +15,7 @@ class ArgumentParser
 
     begin
       @options = options
-      @path = opt.parse!(argv).first
+      @paths = opt.parse!(argv)
     rescue OptionParser::InvalidOption => e
       @error_message = e.message
     end

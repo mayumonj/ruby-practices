@@ -12,14 +12,19 @@ def main
     return
   end
 
-  begin
-    contents = ContentFactory.create_contents(argument_parser.path)
-  rescue ArgumentError => e
-    puts e.message
-    return
-  end
+  argument_parser.paths << '.' if argument_parser.paths.empty?
 
-  Ls.display(argument_parser.options, contents)
+  argument_parser.paths.each do |path|
+    begin
+      contents = ContentFactory.create_contents(path)
+    rescue ArgumentError => e
+      puts e.message
+      next
+    end
+    puts "#{path}:" if argument_parser.paths.size > 1
+    Ls.display(argument_parser.options, contents)
+    puts '' if argument_parser.paths.size > 1
+  end
 end
 
 main if __FILE__ == $PROGRAM_NAME
